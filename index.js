@@ -31,6 +31,7 @@ function Smooth(inOptions){
     stream.Transform.call(this, inOptions);
     this.kernel = [0.25, 0.5, 0.25];
     this.temp = new Buffer([0]);
+    this.name = "";
 }
 Smooth.prototype = Object.create(stream.Transform.prototype);
 Smooth.prototype.compute = function(inChunk){
@@ -54,6 +55,7 @@ Smooth.prototype.compute = function(inChunk){
             this.shift();
         }
     }
+    
     
     /*
     ======================
@@ -118,8 +120,10 @@ Smooth.prototype.sample = function(){
     for(i=0; i<this.kernel.length; i++){
         sum += this.kernel[i] * this.temp[i];
     }
-    
-    this.push(new Buffer(sum));
+
+    var output = new Uint16Array(1);
+    output[0] = sum;
+    this.push(new Buffer(output));
 };
 
 Smooth.prototype.shift = function(){
@@ -133,20 +137,44 @@ Smooth.prototype._transform = function(inChunk, inEncoding, inDone){
 
 Smooth.prototype._flush = function(inDone){
     var empty;
-    
+
     empty = new Buffer([0]);
-    this.compute(empty);//pad the input
-    this.temp = empty;// reset the temp buffer so this smoother can be used again
+    this.compute(empty);//pad the input with empty values so the kernel can scan past the edge.
+    this.temp = empty;// reset the temp buffer so this smoother can be used again.
     inDone();
 };
 
 
+function Spy(inOptions){
+    stream.Transform.call(this, inOptions);
+    this.record = new Buffer([]);
+};
+Spy.prototype = Object.create(stream.Transform.prototype);
+Spy.prototype._transform = function(inChunk, inEncoding, inDone){
+    this.record = Buffer.concat([this.record, inChunk]);
+    this.push(inChunk);
+    inDone();
+};
+Spy.prototype._flush = function(inDone){
+    var i, j;
+    var int;
+    var str;
+    console.log("\n||||||||||||||||||||||||||||||||||||||||||||||\n");
+    for(i=0; i<this.record.length; i++){
+        int = parseInt(this.record[i]);
+        str = "";
+        for(j=0; j<int; j++){
+            str += "-";
+        }
+        str += "+";
+        console.log(str);
+    }
+    inDone();
+};
+
 var n1 = new Noise();
-n1.length = 2;
-n1.stride = 5;
+n1.min = 0;
+n1.max = 50;
+n1.length = 20;
 
-var s1 = new Smooth();
-var s2 = new Smooth();
-
-
-n1.pipe(s1);
+n1.pipe(new Spy()).pipe(new Smooth()).pipe(new Spy()).pipe(new Smooth()).pipe(new Spy()).pipe(new Smooth()).pipe(new Spy());
