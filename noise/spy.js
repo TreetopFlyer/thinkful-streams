@@ -1,7 +1,8 @@
 var stream = require('stream');
 var plotter = require('./plotter');
 
-function Spy(inOptions){
+function Spy(inAlias, inOptions){
+    this.alias = inAlias;
     stream.Transform.call(this, inOptions);
     this.record = new Buffer([]);
 };
@@ -13,9 +14,10 @@ Spy.prototype._transform = function(inChunk, inEncoding, inDone){
 };
 Spy.prototype._flush = function(inDone){
     
-    console.log("\n||||||||||||||||||||||||||||||||||||||||||||||\n");
+    console.log("\n\n_______________________| "+this.alias+" |_______________________\n");
     plotter(this.record);
     inDone();
+    
 };
 
 module.exports = Spy;

@@ -1,5 +1,6 @@
 module.exports = {
-    Generate: require('./noise.js'),
-    Smooth: require('./smooth.js'),
-    Spy: require('./spy.js')
+    Generate: require('./noise'),
+    Smooth: require('./smooth'),
+    Spy: require('./spy'),
+    Display: require('./display')
 };

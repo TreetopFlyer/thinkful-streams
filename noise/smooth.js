@@ -84,9 +84,9 @@ Buffer: [1][2][3][4][5]
 Sample the buffer with the kernel weights:
 
 Kernel: [X][Y][Z]
-            |  |  |
+         |  |  |
 Buffer: [1][2][3][4][5]
-            \ _|__/
+         \ _|__/
             |
 Output:    [A]
 
@@ -94,17 +94,17 @@ Output:    [A]
 Shift and repeat until the buffer is not full/overflowing:
 
 Kernel: [X][Y][Z]
-            |  |  |
+         |  |  |
 Buffer: [2][3][4][5] <<---
-            \ _|__/
+         \ _|__/
             |
 Output:    [B]
 
 ----------
 Kernel: [X][Y][Z]
-            |  |  |
+         |  |  |
 Buffer: [3][4][5] <<------
-            \ _|__/
+         \ _|__/
             |
 Output:    [C]
 

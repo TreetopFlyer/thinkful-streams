@@ -1,10 +1,22 @@
 var Noise = require('./noise');
 
-var n1 = new Noise.Generate();
-n1.min = 0;
-n1.max = 50;
+var noise = new Noise.Generate();
+noise.min = 0;
+noise.max = 50;
+noise.stride = 1;
+noise.length = 20;
 
-n1.stride = 1;
-n1.length = 20;
+var smooth = new Noise.Smooth();
 
-n1.pipe(new Noise.Spy()).pipe(new Noise.Smooth()).pipe(new Noise.Spy());
+noise
+.pipe(new Noise.Spy("Raw noise"))
+.pipe(smooth)
+.pipe(new Noise.Spy("1st smooth"))
+.pipe(smooth)
+.pipe(new Noise.Spy("2nd smooth"))
+
+/*
+noise
+.pipe(s1)
+.pipe(new Noise.Display());
+*/
